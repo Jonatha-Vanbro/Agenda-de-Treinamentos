@@ -140,9 +140,7 @@
       align-items: center;
     }
 
-    /* -------------------------------------------------------------
-       ESTILIZAÇÃO PERSONALIZADA E COLORIDA DO FLATPICKR (CALENDÁRIO)
-       ------------------------------------------------------------- */
+    /* Estilização do Calendário */
     .flatpickr-calendar.inline {
       box-shadow: 0 8px 24px rgba(0,0,0,0.35);
       border: 1px solid var(--border-color) !important;
@@ -154,7 +152,6 @@
       overflow: hidden;
     }
 
-    /* Topo do Calendário (Cabeçalho do Mês) */
     .flatpickr-months {
       background: linear-gradient(135deg, #1e3a8a, #2563eb);
       border-radius: 8px 8px 0 0;
@@ -172,14 +169,12 @@
       fill: #ffffff !important;
     }
 
-    /* Dias da Semana (Dom, Seg, Ter...) */
     span.flatpickr-weekday {
-      color: #38bdf8 !important; /* Azul ciano vibrante */
+      color: #38bdf8 !important;
       font-weight: 700 !important;
       font-size: 0.85rem;
     }
 
-    /* Dias normais do mês */
     .flatpickr-day {
       border-radius: 8px !important;
       color: var(--text-main);
@@ -193,24 +188,22 @@
       transition: all 0.15s ease-in-out;
     }
 
-    /* Dia Atual (Hoje) */
     .flatpickr-day.today {
       border: 2px solid #38bdf8 !important;
       font-weight: bold;
     }
 
-    /* Dias Selecionados no Formulário (Verde Destaque) */
     .flatpickr-day.selected, 
     .flatpickr-day.startRange, 
     .flatpickr-day.endRange {
-      background: #10b981 !important; /* Verde Esmeralda */
+      background: #10b981 !important;
       border-color: #059669 !important;
       color: #ffffff !important;
       font-weight: bold !important;
       box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
     }
 
-    /* Datas Ocupadas (Agendadas na Planilha) - Vermelho Vibrante com Gradiente */
+    /* Datas Ocupadas */
     .flatpickr-day.dia-ocupado {
       background: linear-gradient(135deg, #ef4444, #dc2626) !important;
       color: #ffffff !important;
@@ -368,7 +361,8 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoqMqbo2OHDNi6RhJV02hGLXkuGOsHtWXzWlsbHZgKZLV_QYKyjCGmlNPU3fCemy-6/exec";
+    // URL de Implantação Atualizada
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuxKw7M4lid4lxoVfoofCqvleuJvncNPEEYWd831qYllOqncMUFe2KDJkFBQ4-6uAE/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -377,7 +371,7 @@
     const themeIcon = document.getElementById('themeIcon');
     const themeText = document.getElementById('themeText');
 
-    let datasOcupadas = [];
+    let datasOcupadas = {}; // Dicionário: "YYYY-MM-DD" -> "Nome da Empresa"
     let calendarPicker = null;
 
     // Gerenciamento de Tema
@@ -419,9 +413,11 @@
           const dia = String(dayElem.dateObj.getDate()).padStart(2, '0');
           const dataIso = `${ano}-${mes}-${dia}`;
 
-          if (datasOcupadas.includes(dataIso)) {
+          // Verifica se existe agendamento nesta data
+          if (datasOcupadas[dataIso]) {
+            const nomeEmpresa = datasOcupadas[dataIso];
             dayElem.classList.add("dia-ocupado");
-            dayElem.title = "Já existe agendamento nesta data";
+            dayElem.title = `Agendado: ${nomeEmpresa}`;
           }
         }
       });
@@ -456,10 +452,11 @@
       btnSalvar.disabled = true;
       btnSalvar.textContent = "Enviando dados para a planilha...";
 
+      const empresaNome = document.getElementById('empresa').value;
       const dataFormatada = document.getElementById('periodoTreinamento').value;
 
       const dados = {
-        empresa: document.getElementById('empresa').value,
+        empresa: empresaNome,
         cidade: document.getElementById('cidade').value,
         uf: document.getElementById('uf').value.toUpperCase(),
         estagiario: document.getElementById('estagiario').value,
@@ -488,7 +485,8 @@
             listaDatas.forEach(dStr => {
               if (dStr.includes('/')) {
                 const p = dStr.split('/');
-                datasOcupadas.push(`${p[2]}-${p[1]}-${p[0]}`);
+                const dataIso = `${p[2]}-${p[1]}-${p[0]}`;
+                datasOcupadas[dataIso] = empresaNome;
               }
             });
             if (calendarPicker) calendarPicker.redraw();
