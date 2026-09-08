@@ -10,7 +10,6 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" id="flatpickr-theme">
   
   <style>
-    /* Variáveis para Tema Escuro (Padrão) */
     :root {
       --bg-body: #0f172a;
       --bg-card: #1e293b;
@@ -24,7 +23,6 @@
       --table-hover: #334155;
     }
 
-    /* Variáveis para Tema Claro */
     body.light-theme {
       --bg-body: #f4f7f6;
       --bg-card: #ffffff;
@@ -68,7 +66,6 @@
     }
     .theme-toggle-btn:hover { background: var(--border-color); }
 
-    /* Layout Superior em 2 Colunas */
     .top-layout {
       display: grid;
       grid-template-columns: 1fr 320px;
@@ -133,14 +130,12 @@
     button[type="submit"]:hover { background-color: var(--primary-hover); }
     button[type="submit"]:disabled { background-color: #64748b; cursor: not-allowed; }
 
-    /* Container do Calendário */
     .calendar-container {
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
-    /* Estilização do Calendário */
     .flatpickr-calendar.inline {
       box-shadow: 0 8px 24px rgba(0,0,0,0.35);
       border: 1px solid var(--border-color) !important;
@@ -203,7 +198,6 @@
       box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
     }
 
-    /* Datas Ocupadas */
     .flatpickr-day.dia-ocupado {
       background: linear-gradient(135deg, #ef4444, #dc2626) !important;
       color: #ffffff !important;
@@ -216,7 +210,6 @@
       background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
     }
 
-    /* Tabela Ajustada */
     .table-container { 
       overflow-x: auto; 
       max-height: 280px; 
@@ -256,7 +249,22 @@
     th:nth-child(4), td:nth-child(4) { min-width: 200px; }
     th:nth-child(5), td:nth-child(5) { min-width: 220px; }
     th:nth-child(6), td:nth-child(6) { min-width: 150px; }
-    th:nth-child(7), td:nth-child(7) { min-width: 100px; }
+    th:nth-child(7), td:nth-child(7) { min-width: 130px; }
+
+    .status-select {
+      background: var(--bg-input);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .status-select.Pendente { color: #f59e0b; border-color: #f59e0b; }
+    .status-select.Agendado { color: #3b82f6; border-color: #3b82f6; }
+    .status-select.Concluído { color: #10b981; border-color: #10b981; }
+    .status-select.Cancelado { color: #ef4444; border-color: #ef4444; }
 
     tr:hover { background-color: var(--table-hover); }
   </style>
@@ -331,13 +339,13 @@
         </form>
       </div>
 
-      <!-- Calendário Exibido à Direita -->
+      <!-- Calendário -->
       <div class="calendar-container">
         <div id="inlineCalendar"></div>
       </div>
     </div>
 
-    <!-- Tabela na Parte Inferior -->
+    <!-- Tabela -->
     <div class="table-container">
       <table>
         <thead>
@@ -361,8 +369,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    // URL de Implantação Atualizada
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9BMbTNLU622efzOy8e9GAsWycPHrcK99D9wSBjLzke2j39SCs4HnhlMkWl0Urft4q/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYzFgUlIRSz6rR960X9FY4PhLXjctx1-kJNkfHpQV_BUgDP_ivRPZ2lnSOmVqbwSay/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -371,10 +378,9 @@
     const themeIcon = document.getElementById('themeIcon');
     const themeText = document.getElementById('themeText');
 
-    let datasOcupadas = {}; // Dicionário: "YYYY-MM-DD" -> "Nome da Empresa"
+    let datasOcupadas = {};
     let calendarPicker = null;
 
-    // Gerenciamento de Tema
     function aplicarTema(tema) {
       if (tema === 'light') {
         document.body.classList.add('light-theme');
@@ -413,7 +419,6 @@
           const dia = String(dayElem.dateObj.getDate()).padStart(2, '0');
           const dataIso = `${ano}-${mes}-${dia}`;
 
-          // Verifica se existe agendamento nesta data
           if (datasOcupadas[dataIso]) {
             const nomeEmpresa = datasOcupadas[dataIso];
             dayElem.classList.add("dia-ocupado");
@@ -470,7 +475,6 @@
         comercial: document.getElementById('comercial').checked
       };
 
-      // Envio com modo no-cors para evitar bloqueios cross-origin no Apps Script
       fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
@@ -499,17 +503,41 @@
 
         form.reset();
         if (calendarPicker) calendarPicker.clear();
-        alert("Registro adicionado com sucesso à planilha!");
+        alert("Registro adicionado com sucesso!");
       })
       .catch(error => {
         console.error('Erro:', error);
-        alert("Ocorreu um erro ao enviar os dados. Verifique a implantação do Apps Script.");
+        alert("Ocorreu um erro ao enviar os dados.");
       })
       .finally(() => {
         btnSalvar.disabled = false;
         btnSalvar.textContent = "Cadastrar na Planilha";
       });
     });
+
+    function alterarStatus(selectElem, item) {
+      const novoStatus = selectElem.value;
+      selectElem.className = `status-select ${novoStatus}`;
+
+      const payload = {
+        action: "updateStatus",
+        linha: item.linha || null,
+        empresa: item.empresa,
+        estagiario: item.estagiario,
+        novoStatus: novoStatus
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        carregarDadosPlanilha();
+      })
+      .catch(err => console.error("Erro ao alterar status:", err));
+    }
 
     function adicionarLinhaTabela(item, noTopo = false) {
       const tr = document.createElement('tr');
@@ -521,6 +549,8 @@
       if (item.dimensionamentos) interesses.push("Dimensionamentos");
       if (item.comercial) interesses.push("Comercial");
 
+      const currentStatus = item.status || "Pendente";
+
       tr.innerHTML = `
         <td>${item.empresa}</td>
         <td>${item.cidade}/${item.uf}</td>
@@ -528,7 +558,14 @@
         <td>${item.email}</td>
         <td>${interesses.join(', ') || '-'}</td>
         <td>${item.periodoTreinamento || '-'}</td>
-        <td>${item.status}</td>
+        <td>
+          <select class="status-select ${currentStatus}" onchange="alterarStatus(this, ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+            <option value="Pendente" ${currentStatus === "Pendente" ? "selected" : ""}>Pendente</option>
+            <option value="Agendado" ${currentStatus === "Agendado" ? "selected" : ""}>Agendado</option>
+            <option value="Concluído" ${currentStatus === "Concluído" ? "selected" : ""}>Concluído</option>
+            <option value="Cancelado" ${currentStatus === "Cancelado" ? "selected" : ""}>Cancelado</option>
+          </select>
+        </td>
       `;
 
       if (noTopo) {
