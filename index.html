@@ -362,7 +362,7 @@
 
   <script>
     // URL de Implantação Atualizada
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxuxKw7M4lid4lxoVfoofCqvleuJvncNPEEYWd831qYllOqncMUFe2KDJkFBQ4-6uAE/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAe2D-USzKcSp_KChTycFV-RYJRXQT8FKRvJnW2MLgdU_6Tykc_uyGPzSK5HaKTAId/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -485,8 +485,12 @@
             listaDatas.forEach(dStr => {
               if (dStr.includes('/')) {
                 const p = dStr.split('/');
-                const dataIso = `${p[2]}-${p[1]}-${p[0]}`;
-                datasOcupadas[dataIso] = empresaNome;
+                const dataIso = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
+                if (datasOcupadas[dataIso]) {
+                  datasOcupadas[dataIso] += " / " + empresaNome;
+                } else {
+                  datasOcupadas[dataIso] = empresaNome;
+                }
               }
             });
             if (calendarPicker) calendarPicker.redraw();
