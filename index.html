@@ -56,10 +56,30 @@
     button:hover { background-color: #1d4ed8; }
     button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
-    .table-container { overflow-x: auto; margin-top: 15px; }
+    /* Estilização para limitar em 8 registros e habilitar o scroll */
+    .table-container { 
+      overflow-x: auto; 
+      max-height: 360px; /* Limita a altura visível para aproximadamente 8 registros */
+      overflow-y: auto;  /* Ativa a barra de rolagem vertical */
+      margin-top: 15px; 
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+    }
+    
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    
+    /* Mantém o cabeçalho fixo no topo ao rolar a página */
+    th { 
+      position: sticky; 
+      top: 0; 
+      background-color: #f3f4f6; 
+      color: #374151; 
+      font-weight: 600; 
+      z-index: 1;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
     th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
-    th { background-color: #f3f4f6; color: #374151; font-weight: 600; }
     tr:hover { background-color: #f9fafb; }
 
     .flatpickr-day.dia-ocupado {
@@ -194,7 +214,8 @@
 
           if (data.historico && data.historico.length > 0) {
             tabelaCorpo.innerHTML = "";
-            data.historico.forEach(item => adicionarLinhaTabela(item));
+            // Carrega os registros do mais recente para o mais antigo
+            data.historico.slice().reverse().forEach(item => adicionarLinhaTabela(item));
           }
         })
         .catch(err => console.error("Erro ao carregar dados:", err));
@@ -236,7 +257,8 @@
       .then(res => res.json())
       .then(response => {
         if (response.result === "success") {
-          adicionarLinhaTabela(dados);
+          // Adiciona o novo registro no topo da tabela
+          adicionarLinhaTabela(dados, true);
 
           if (dataFormatada) {
             const listaDatas = dataFormatada.split(', ');
@@ -265,7 +287,7 @@
       });
     });
 
-    function adicionarLinhaTabela(item) {
+    function adicionarLinhaTabela(item, noTopo = false) {
       const tr = document.createElement('tr');
       
       const interesses = [];
@@ -285,7 +307,11 @@
         <td>${item.status}</td>
       `;
 
-      tabelaCorpo.appendChild(tr);
+      if (noTopo) {
+        tabelaCorpo.prepend(tr); // Adiciona no início da tabela
+      } else {
+        tabelaCorpo.appendChild(tr);
+      }
     }
   </script>
 </body>
