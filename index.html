@@ -11,9 +11,9 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f4f7f6; color: #333; padding: 20px; }
-    .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    .container { max-width: 1400px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
     
-    /* Layout Superior em 2 Colunas (Formulário + Calendário) */
+    /* Layout Superior em 2 Colunas */
     .top-layout {
       display: grid;
       grid-template-columns: 1fr 320px;
@@ -74,7 +74,7 @@
     button:hover { background-color: #1d4ed8; }
     button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
-    /* Estilização do Calendário Fixo à Direita */
+    /* Calendário Fixo */
     .calendar-container {
       display: flex;
       justify-content: center;
@@ -97,16 +97,22 @@
       border-radius: 50%;
     }
 
-    /* Tabela em Toda a Largura com Scroll Limitado a 8 Registros */
+    /* Tabela Ajustada para 6 Registros e Maior Largura Visível */
     .table-container { 
       overflow-x: auto; 
-      max-height: 360px;
+      max-height: 280px; /* Reduzido para exibir aproximadamente 6 linhas visíveis */
       overflow-y: auto;
       border: 1px solid #e5e7eb;
       border-radius: 6px;
+      width: 100%;
     }
     
-    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      font-size: 0.85rem; 
+      table-layout: auto;
+    }
     
     th { 
       position: sticky; 
@@ -118,7 +124,21 @@
       border-bottom: 2px solid #e5e7eb;
     }
     
-    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+    th, td { 
+      text-align: left; 
+      padding: 10px; 
+      border-bottom: 1px solid #e5e7eb; 
+    }
+
+    /* Ajustes específicos de largura para garantir leitura até o Período */
+    th:nth-child(1), td:nth-child(1) { min-width: 180px; } /* Empresa */
+    th:nth-child(2), td:nth-child(2) { min-width: 130px; } /* Cidade/UF */
+    th:nth-child(3), td:nth-child(3) { min-width: 160px; } /* Estagiário */
+    th:nth-child(4), td:nth-child(4) { min-width: 200px; } /* E-mail */
+    th:nth-child(5), td:nth-child(5) { min-width: 220px; } /* Interesses */
+    th:nth-child(6), td:nth-child(6) { min-width: 150px; } /* Período */
+    th:nth-child(7), td:nth-child(7) { min-width: 100px; } /* Status */
+
     tr:hover { background-color: #f9fafb; }
   </style>
 </head>
@@ -127,7 +147,7 @@
   <div class="container">
     
     <div class="top-layout">
-      <!-- Formulário na Esquerda -->
+      <!-- Formulário -->
       <div class="form-container">
         <h1>Cadastro de Treinamentos</h1>
         
@@ -193,7 +213,7 @@
       </div>
     </div>
 
-    <!-- Tabela na Parte Inferior -->
+    <!-- Tabela na Parte Inferior com Maior Largura e 6 Registros Visíveis -->
     <div class="table-container">
       <table>
         <thead>
