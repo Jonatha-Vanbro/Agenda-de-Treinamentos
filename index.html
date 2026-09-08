@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro de Treinamentos</title>
   
-  <!-- CSS do Flatpickr (Calendário Customizado) -->
+  <!-- CSS do Flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   
   <style>
@@ -105,7 +105,7 @@
 
       <div class="input-field">
         <label for="periodoTreinamento">Período de Treinamento</label>
-        <input type="text" id="periodoTreinamento" required placeholder="Selecione uma data">
+        <input type="text" id="periodoTreinamento" required placeholder="Selecione uma ou mais datas">
       </div>
 
       <div class="input-field">
@@ -155,7 +155,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIYmigMThTf2NNrOIl8tWdHD_cOIPWlXVkXd03By1HzRCmAa53qx-UDPFrclcdcCIG/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3VUYq3B4JO_581KN0ZnWRDzcAZ4BQVTQbOb5BH_hDRxwvS3hzenPb75xDiXBxUkz9/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -164,9 +164,11 @@
     let datasOcupadas = [];
     let calendarPicker = null;
 
-    // Inicializa o Flatpickr
+    // Inicializa o Flatpickr com seleção múltipla de datas
     function inicializarCalendario() {
       calendarPicker = flatpickr("#periodoTreinamento", {
+        mode: "multiple",
+        conjunction: ", ",
         locale: "pt",
         dateFormat: "d/m/Y",
         onDayCreate: function(dObj, dStr, fp, dayElem) {
@@ -234,10 +236,15 @@
       .then(() => {
         adicionarLinhaTabela(dados);
         
-        // Adiciona a nova data à lista local e atualiza o calendário
-        if (dataFormatada.includes('/')) {
-          const p = dataFormatada.split('/');
-          datasOcupadas.push(`${p[2]}-${p[1]}-${p[0]}`);
+        // Adiciona as novas datas selecionadas à lista local de ocupadas e atualiza o calendário
+        if (dataFormatada) {
+          const listaDatas = dataFormatada.split(', ');
+          listaDatas.forEach(dStr => {
+            if (dStr.includes('/')) {
+              const p = dStr.split('/');
+              datasOcupadas.push(`${p[2]}-${p[1]}-${p[0]}`);
+            }
+          });
           if (calendarPicker) calendarPicker.redraw();
         }
 
