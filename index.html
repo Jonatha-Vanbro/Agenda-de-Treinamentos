@@ -133,31 +133,97 @@
     button[type="submit"]:hover { background-color: var(--primary-hover); }
     button[type="submit"]:disabled { background-color: #64748b; cursor: not-allowed; }
 
-    /* Calendário Fixo */
+    /* Container do Calendário */
     .calendar-container {
       display: flex;
       justify-content: center;
       align-items: center;
     }
 
+    /* -------------------------------------------------------------
+       ESTILIZAÇÃO PERSONALIZADA E COLORIDA DO FLATPICKR (CALENDÁRIO)
+       ------------------------------------------------------------- */
     .flatpickr-calendar.inline {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-      border: 1px solid var(--border-color);
-      border-radius: 8px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+      border: 1px solid var(--border-color) !important;
+      border-radius: 12px !important;
       width: 100% !important;
       max-width: 320px;
       background: var(--bg-card) !important;
+      padding: 10px;
+      overflow: hidden;
     }
 
-    .flatpickr-day.dia-ocupado {
-      background-color: #7f1d1d !important;
-      color: #fca5a5 !important;
+    /* Topo do Calendário (Cabeçalho do Mês) */
+    .flatpickr-months {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      border-radius: 8px 8px 0 0;
+      padding: 6px 0;
+      margin: -10px -10px 10px -10px;
+    }
+    .flatpickr-current-month .flatpickr-monthDropdown-months,
+    .flatpickr-current-month input.cur-year {
       font-weight: bold !important;
-      border-color: #991b1b !important;
-      border-radius: 50%;
+      color: #ffffff !important;
+    }
+    .flatpickr-months .flatpickr-prev-month, 
+    .flatpickr-months .flatpickr-next-month {
+      color: #ffffff !important;
+      fill: #ffffff !important;
     }
 
-    /* Tabela Ajustada para 6 Registros */
+    /* Dias da Semana (Dom, Seg, Ter...) */
+    span.flatpickr-weekday {
+      color: #38bdf8 !important; /* Azul ciano vibrante */
+      font-weight: 700 !important;
+      font-size: 0.85rem;
+    }
+
+    /* Dias normais do mês */
+    .flatpickr-day {
+      border-radius: 8px !important;
+      color: var(--text-main);
+      font-weight: 500;
+      margin: 2px 0;
+    }
+    .flatpickr-day:hover {
+      background-color: #3b82f6 !important;
+      color: #ffffff !important;
+      transform: scale(1.08);
+      transition: all 0.15s ease-in-out;
+    }
+
+    /* Dia Atual (Hoje) */
+    .flatpickr-day.today {
+      border: 2px solid #38bdf8 !important;
+      font-weight: bold;
+    }
+
+    /* Dias Selecionados no Formulário (Verde Destaque) */
+    .flatpickr-day.selected, 
+    .flatpickr-day.startRange, 
+    .flatpickr-day.endRange {
+      background: #10b981 !important; /* Verde Esmeralda */
+      border-color: #059669 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
+    }
+
+    /* Datas Ocupadas (Agendadas na Planilha) - Vermelho Vibrante com Gradiente */
+    .flatpickr-day.dia-ocupado {
+      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      border: none !important;
+      border-radius: 8px !important;
+      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+    }
+    .flatpickr-day.dia-ocupado:hover {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    }
+
+    /* Tabela Ajustada */
     .table-container { 
       overflow-x: auto; 
       max-height: 280px; 
@@ -314,7 +380,7 @@
     let datasOcupadas = [];
     let calendarPicker = null;
 
-    // Gerenciamento de Tema (Modo Escuro / Claro)
+    // Gerenciamento de Tema
     function aplicarTema(tema) {
       if (tema === 'light') {
         document.body.classList.add('light-theme');
@@ -334,7 +400,6 @@
       aplicarTema(novoTema);
     });
 
-    // Carrega a preferência de tema salva
     const temaSalvo = localStorage.getItem('temaPref') || 'dark';
     aplicarTema(temaSalvo);
 
