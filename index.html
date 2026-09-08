@@ -92,7 +92,7 @@
 
       <div class="input-field">
         <label for="periodoTreinamento">Período de Treinamento</label>
-        <input type="text" id="periodoTreinamento" placeholder="Ex: Mês/Ano ou Datas">
+        <input type="date" id="periodoTreinamento" required>
       </div>
 
       <div class="input-field">
@@ -150,13 +150,16 @@
       btnSalvar.disabled = true;
       btnSalvar.textContent = "Enviando dados para a planilha...";
 
+      const dataRaw = document.getElementById('periodoTreinamento').value;
+      const dataFormatada = dataRaw ? dataRaw.split('-').reverse().join('/') : '';
+
       const dados = {
         empresa: document.getElementById('empresa').value,
         cidade: document.getElementById('cidade').value,
         uf: document.getElementById('uf').value.toUpperCase(),
         estagiario: document.getElementById('estagiario').value,
         email: document.getElementById('email').value,
-        periodoTreinamento: document.getElementById('periodoTreinamento').value,
+        periodoTreinamento: dataFormatada,
         status: document.getElementById('status').value,
         quadroComando: document.getElementById('quadroComando').checked,
         manutencaoBombas: document.getElementById('manutencaoBombas').checked,
