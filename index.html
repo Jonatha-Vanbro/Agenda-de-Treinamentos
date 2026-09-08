@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro de Treinamentos</title>
+  
+  <!-- CSS do Flatpickr (Calendário Customizado) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f4f7f6; color: #333; padding: 20px; }
@@ -57,6 +61,15 @@
     th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
     th { background-color: #f3f4f6; color: #374151; font-weight: 600; }
     tr:hover { background-color: #f9fafb; }
+
+    /* Estilo para dias com agendamento no calendário */
+    .flatpickr-day.dia-ocupado {
+      background-color: #fee2e2 !important;
+      color: #991b1b !important;
+      font-weight: bold !important;
+      border-color: #fca5a5 !important;
+      border-radius: 50%;
+    }
   </style>
 </head>
 <body>
@@ -92,7 +105,7 @@
 
       <div class="input-field">
         <label for="periodoTreinamento">Período de Treinamento</label>
-        <input type="date" id="periodoTreinamento" required>
+        <input type="text" id="periodoTreinamento" required placeholder="Selecione uma data">
       </div>
 
       <div class="input-field">
@@ -137,12 +150,57 @@
     </div>
   </div>
 
+  <!-- Scripts do Flatpickr -->
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
+
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMpWtqWITH0WbzqIJfkqFspLtaY1JPF1_c_de-6cBB1XTGtgtodwDNsEZNvQRjgdBD/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzIYmigMThTf2NNrOIl8tWdHD_cOIPWlXVkXd03By1HzRCmAa53qx-UDPFrclcdcCIG/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
     const btnSalvar = document.getElementById('btnSalvar');
+
+    let datasOcupadas = [];
+    let calendarPicker = null;
+
+    // Inicializa o Flatpickr
+    function inicializarCalendario() {
+      calendarPicker = flatpickr("#periodoTreinamento", {
+        locale: "pt",
+        dateFormat: "d/m/Y",
+        onDayCreate: function(dObj, dStr, fp, dayElem) {
+          const ano = dayElem.dateObj.getFullYear();
+          const mes = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
+          const dia = String(dayElem.dateObj.getDate()).padStart(2, '0');
+          const dataIso = `${ano}-${mes}-${dia}`;
+
+          if (datasOcupadas.includes(dataIso)) {
+            dayElem.classList.add("dia-ocupado");
+            dayElem.title = "Já existe agendamento nesta data";
+          }
+        }
+      });
+    }
+
+    // Busca as datas agendadas na planilha
+    function carregarDatasOcupadas() {
+      fetch(GOOGLE_SCRIPT_URL)
+        .then(res => res.json())
+        .then(data => {
+          if (data.datasOcupadas) {
+            datasOcupadas = data.datasOcupadas;
+            if (calendarPicker) calendarPicker.destroy();
+            inicializarCalendario();
+          }
+        })
+        .catch(err => console.error("Erro ao carregar datas:", err));
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      inicializarCalendario();
+      carregarDatasOcupadas();
+    });
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
@@ -150,8 +208,7 @@
       btnSalvar.disabled = true;
       btnSalvar.textContent = "Enviando dados para a planilha...";
 
-      const dataRaw = document.getElementById('periodoTreinamento').value;
-      const dataFormatada = dataRaw ? dataRaw.split('-').reverse().join('/') : '';
+      const dataFormatada = document.getElementById('periodoTreinamento').value;
 
       const dados = {
         empresa: document.getElementById('empresa').value,
@@ -176,6 +233,14 @@
       })
       .then(() => {
         adicionarLinhaTabela(dados);
+        
+        // Adiciona a nova data à lista local e atualiza o calendário
+        if (dataFormatada.includes('/')) {
+          const p = dataFormatada.split('/');
+          datasOcupadas.push(`${p[2]}-${p[1]}-${p[0]}`);
+          if (calendarPicker) calendarPicker.redraw();
+        }
+
         form.reset();
         alert("Registro adicionado com sucesso à planilha!");
       })
