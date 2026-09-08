@@ -62,7 +62,6 @@
     th { background-color: #f3f4f6; color: #374151; font-weight: 600; }
     tr:hover { background-color: #f9fafb; }
 
-    /* Estilo para dias com agendamento no calendário */
     .flatpickr-day.dia-ocupado {
       background-color: #fee2e2 !important;
       color: #991b1b !important;
@@ -150,12 +149,11 @@
     </div>
   </div>
 
-  <!-- Scripts do Flatpickr -->
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz3VUYq3B4JO_581KN0ZnWRDzcAZ4BQVTQbOb5BH_hDRxwvS3hzenPb75xDiXBxUkz9/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoqMqbo2OHDNi6RhJV02hGLXkuGOsHtWXzWlsbHZgKZLV_QYKyjCGmlNPU3fCemy-6/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -164,7 +162,6 @@
     let datasOcupadas = [];
     let calendarPicker = null;
 
-    // Inicializa o Flatpickr com seleção múltipla de datas
     function inicializarCalendario() {
       calendarPicker = flatpickr("#periodoTreinamento", {
         mode: "multiple",
@@ -185,8 +182,7 @@
       });
     }
 
-    // Busca as datas agendadas na planilha
-    function carregarDatasOcupadas() {
+    function carregarDadosPlanilha() {
       fetch(GOOGLE_SCRIPT_URL)
         .then(res => res.json())
         .then(data => {
@@ -195,13 +191,18 @@
             if (calendarPicker) calendarPicker.destroy();
             inicializarCalendario();
           }
+
+          if (data.historico && data.historico.length > 0) {
+            tabelaCorpo.innerHTML = "";
+            data.historico.forEach(item => adicionarLinhaTabela(item));
+          }
         })
-        .catch(err => console.error("Erro ao carregar datas:", err));
+        .catch(err => console.error("Erro ao carregar dados:", err));
     }
 
     document.addEventListener("DOMContentLoaded", () => {
       inicializarCalendario();
-      carregarDatasOcupadas();
+      carregarDadosPlanilha();
     });
 
     form.addEventListener('submit', function(e) {
@@ -229,31 +230,34 @@
 
       fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(dados)
       })
-      .then(() => {
-        adicionarLinhaTabela(dados);
-        
-        // Adiciona as novas datas selecionadas à lista local de ocupadas e atualiza o calendário
-        if (dataFormatada) {
-          const listaDatas = dataFormatada.split(', ');
-          listaDatas.forEach(dStr => {
-            if (dStr.includes('/')) {
-              const p = dStr.split('/');
-              datasOcupadas.push(`${p[2]}-${p[1]}-${p[0]}`);
-            }
-          });
-          if (calendarPicker) calendarPicker.redraw();
-        }
+      .then(res => res.json())
+      .then(response => {
+        if (response.result === "success") {
+          adicionarLinhaTabela(dados);
 
-        form.reset();
-        alert("Registro adicionado com sucesso à planilha!");
+          if (dataFormatada) {
+            const listaDatas = dataFormatada.split(', ');
+            listaDatas.forEach(dStr => {
+              if (dStr.includes('/')) {
+                const p = dStr.split('/');
+                datasOcupadas.push(`${p[2]}-${p[1]}-${p[0]}`);
+              }
+            });
+            if (calendarPicker) calendarPicker.redraw();
+          }
+
+          form.reset();
+          alert("Registro adicionado com sucesso à planilha!");
+        } else {
+          alert("Erro no script da planilha: " + response.error);
+        }
       })
       .catch(error => {
         console.error('Erro:', error);
-        alert("Ocorreu um erro ao enviar os dados.");
+        alert("Ocorreu um erro ao enviar os dados. Verifique a implantação do Apps Script.");
       })
       .finally(() => {
         btnSalvar.disabled = false;
