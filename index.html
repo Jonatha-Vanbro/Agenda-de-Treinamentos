@@ -11,18 +11,34 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
     body { background-color: #f4f7f6; color: #333; padding: 20px; }
-    .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
-    h1 { margin-bottom: 20px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+    .container { max-width: 1200px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    
+    /* Layout Superior em 2 Colunas (Formulário + Calendário) */
+    .top-layout {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 25px;
+      margin-bottom: 25px;
+      align-items: start;
+    }
+
+    @media (max-width: 900px) {
+      .top-layout { grid-template-columns: 1fr; }
+    }
+
+    .form-container {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    h1 { margin-bottom: 20px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; font-size: 1.5rem; }
     
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 15px;
-      background: #f9fafb;
-      padding: 20px;
-      border-radius: 6px;
-      border: 1px solid #e5e7eb;
-      margin-bottom: 25px;
     }
 
     .input-field { display: flex; flex-direction: column; }
@@ -31,10 +47,11 @@
 
     .checkbox-group {
       grid-column: 1 / -1;
-      background: #fff;
+      background: #f9fafb;
       padding: 15px;
       border: 1px solid #e5e7eb;
       border-radius: 6px;
+      margin-top: 10px;
     }
 
     .checkbox-group p { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; color: #374151; }
@@ -52,23 +69,45 @@
       cursor: pointer;
       font-size: 1rem;
       transition: background-color 0.2s;
+      margin-top: 10px;
     }
     button:hover { background-color: #1d4ed8; }
     button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
-    /* Estilização para limitar em 8 registros e habilitar o scroll */
+    /* Estilização do Calendário Fixo à Direita */
+    .calendar-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .flatpickr-calendar.inline {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      width: 100% !important;
+      max-width: 320px;
+    }
+
+    .flatpickr-day.dia-ocupado {
+      background-color: #fee2e2 !important;
+      color: #991b1b !important;
+      font-weight: bold !important;
+      border-color: #fca5a5 !important;
+      border-radius: 50%;
+    }
+
+    /* Tabela em Toda a Largura com Scroll Limitado a 8 Registros */
     .table-container { 
       overflow-x: auto; 
-      max-height: 360px; /* Limita a altura visível para aproximadamente 8 registros */
-      overflow-y: auto;  /* Ativa a barra de rolagem vertical */
-      margin-top: 15px; 
+      max-height: 360px;
+      overflow-y: auto;
       border: 1px solid #e5e7eb;
       border-radius: 6px;
     }
     
     table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
     
-    /* Mantém o cabeçalho fixo no topo ao rolar a página */
     th { 
       position: sticky; 
       top: 0; 
@@ -81,76 +120,80 @@
     
     th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
     tr:hover { background-color: #f9fafb; }
-
-    .flatpickr-day.dia-ocupado {
-      background-color: #fee2e2 !important;
-      color: #991b1b !important;
-      font-weight: bold !important;
-      border-color: #fca5a5 !important;
-      border-radius: 50%;
-    }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Cadastro de Treinamentos</h1>
+    
+    <div class="top-layout">
+      <!-- Formulário na Esquerda -->
+      <div class="form-container">
+        <h1>Cadastro de Treinamentos</h1>
+        
+        <form id="formTreinamento" class="form-grid">
+          <div class="input-field">
+            <label for="empresa">Empresa</label>
+            <input type="text" id="empresa" required placeholder="Nome da empresa">
+          </div>
 
-    <form id="formTreinamento" class="form-grid">
-      <div class="input-field">
-        <label for="empresa">Empresa</label>
-        <input type="text" id="empresa" required placeholder="Nome da empresa">
+          <div class="input-field">
+            <label for="cidade">Cidade</label>
+            <input type="text" id="cidade" required placeholder="Ex: Alegrete">
+          </div>
+
+          <div class="input-field">
+            <label for="uf">UF</label>
+            <input type="text" id="uf" maxlength="2" required placeholder="EX: RS" style="text-transform: uppercase;">
+          </div>
+
+          <div class="input-field">
+            <label for="estagiario">Estagiário / Participante</label>
+            <input type="text" id="estagiario" required placeholder="Nome completo">
+          </div>
+
+          <div class="input-field">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" required placeholder="email@exemplo.com">
+          </div>
+
+          <div class="input-field">
+            <label for="periodoTreinamento">Período de Treinamento</label>
+            <input type="text" id="periodoTreinamento" required placeholder="Selecione no calendário" readonly>
+          </div>
+
+          <div class="input-field">
+            <label for="status">Status</label>
+            <select id="status">
+              <option value="Pendente">Pendente</option>
+              <option value="Agendado">Agendado</option>
+              <option value="Concluído">Concluído</option>
+              <option value="Cancelado">Cancelado</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <p>Áreas de Interesse:</p>
+            <div class="checkbox-options">
+              <label class="checkbox-item"><input type="checkbox" id="quadroComando"> Quadro de Comando</label>
+              <label class="checkbox-item"><input type="checkbox" id="manutencaoBombas"> Manutenção de Bombas</label>
+              <label class="checkbox-item"><input type="checkbox" id="bobinagem"> Bobinagem</label>
+              <label class="checkbox-item"><input type="checkbox" id="dimensionamentos"> Dimensionamentos</label>
+              <label class="checkbox-item"><input type="checkbox" id="comercial"> Comercial</label>
+            </div>
+          </div>
+
+          <button type="submit" id="btnSalvar">Cadastrar na Planilha</button>
+        </form>
       </div>
 
-      <div class="input-field">
-        <label for="cidade">Cidade</label>
-        <input type="text" id="cidade" required placeholder="Ex: Alegrete">
+      <!-- Calendário Exibido à Direita -->
+      <div class="calendar-container">
+        <div id="inlineCalendar"></div>
       </div>
+    </div>
 
-      <div class="input-field">
-        <label for="uf">UF</label>
-        <input type="text" id="uf" maxlength="2" required placeholder="Ex: RS" style="text-transform: uppercase;">
-      </div>
-
-      <div class="input-field">
-        <label for="estagiario">Estagiário / Participante</label>
-        <input type="text" id="estagiario" required placeholder="Nome completo">
-      </div>
-
-      <div class="input-field">
-        <label for="email">E-mail</label>
-        <input type="email" id="email" required placeholder="email@exemplo.com">
-      </div>
-
-      <div class="input-field">
-        <label for="periodoTreinamento">Período de Treinamento</label>
-        <input type="text" id="periodoTreinamento" required placeholder="Selecione uma ou mais datas">
-      </div>
-
-      <div class="input-field">
-        <label for="status">Status</label>
-        <select id="status">
-          <option value="Pendente">Pendente</option>
-          <option value="Agendado">Agendado</option>
-          <option value="Concluído">Concluído</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
-      </div>
-
-      <div class="checkbox-group">
-        <p>Áreas de Interesse:</p>
-        <div class="checkbox-options">
-          <label class="checkbox-item"><input type="checkbox" id="quadroComando"> Quadro de Comando</label>
-          <label class="checkbox-item"><input type="checkbox" id="manutencaoBombas"> Manutenção de Bombas</label>
-          <label class="checkbox-item"><input type="checkbox" id="bobinagem"> Bobinagem</label>
-          <label class="checkbox-item"><input type="checkbox" id="dimensionamentos"> Dimensionamentos</label>
-          <label class="checkbox-item"><input type="checkbox" id="comercial"> Comercial</label>
-        </div>
-      </div>
-
-      <button type="submit" id="btnSalvar">Cadastrar na Planilha</button>
-    </form>
-
+    <!-- Tabela na Parte Inferior -->
     <div class="table-container">
       <table>
         <thead>
@@ -167,6 +210,7 @@
         <tbody id="tabelaCorpo"></tbody>
       </table>
     </div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -183,11 +227,15 @@
     let calendarPicker = null;
 
     function inicializarCalendario() {
-      calendarPicker = flatpickr("#periodoTreinamento", {
+      calendarPicker = flatpickr("#inlineCalendar", {
+        inline: true,
         mode: "multiple",
         conjunction: ", ",
         locale: "pt",
         dateFormat: "d/m/Y",
+        onChange: function(selectedDates, dateStr) {
+          document.getElementById('periodoTreinamento').value = dateStr;
+        },
         onDayCreate: function(dObj, dStr, fp, dayElem) {
           const ano = dayElem.dateObj.getFullYear();
           const mes = String(dayElem.dateObj.getMonth() + 1).padStart(2, '0');
@@ -214,7 +262,6 @@
 
           if (data.historico && data.historico.length > 0) {
             tabelaCorpo.innerHTML = "";
-            // Carrega os registros do mais recente para o mais antigo
             data.historico.slice().reverse().forEach(item => adicionarLinhaTabela(item));
           }
         })
@@ -257,7 +304,6 @@
       .then(res => res.json())
       .then(response => {
         if (response.result === "success") {
-          // Adiciona o novo registro no topo da tabela
           adicionarLinhaTabela(dados, true);
 
           if (dataFormatada) {
@@ -272,6 +318,7 @@
           }
 
           form.reset();
+          if (calendarPicker) calendarPicker.clear();
           alert("Registro adicionado com sucesso à planilha!");
         } else {
           alert("Erro no script da planilha: " + response.error);
@@ -308,7 +355,7 @@
       `;
 
       if (noTopo) {
-        tabelaCorpo.prepend(tr); // Adiciona no início da tabela
+        tabelaCorpo.prepend(tr);
       } else {
         tabelaCorpo.appendChild(tr);
       }
