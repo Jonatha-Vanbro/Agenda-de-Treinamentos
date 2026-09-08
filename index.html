@@ -3,66 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agenda de Treinamentos</title>
+  <title>Cadastro de Treinamentos</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    body {
-      background-color: #f4f7f6;
-      color: #333;
-      padding: 20px;
-    }
-
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      background: #fff;
-      padding: 25px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    }
-
-    h1 {
-      margin-bottom: 20px;
-      color: #1f2937;
-      border-bottom: 2px solid #e5e7eb;
-      padding-bottom: 10px;
-    }
-
-    .form-group {
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: #f4f7f6; color: #333; padding: 20px; }
+    .container { max-width: 1100px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+    h1 { margin-bottom: 20px; color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 10px; }
+    
+    .form-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 15px;
-      margin-bottom: 25px;
       background: #f9fafb;
-      padding: 15px;
+      padding: 20px;
       border-radius: 6px;
       border: 1px solid #e5e7eb;
+      margin-bottom: 25px;
     }
 
-    .input-field {
-      display: flex;
-      flex-direction: column;
+    .input-field { display: flex; flex-direction: column; }
+    .input-field label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: #4b5563; }
+    .input-field input, .input-field select { padding: 10px; border: 1px solid #d1d5db; border-radius: 4px; font-size: 0.95rem; }
+
+    .checkbox-group {
+      grid-column: 1 / -1;
+      background: #fff;
+      padding: 15px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
     }
 
-    .input-field label {
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 5px;
-      color: #4b5563;
-    }
-
-    .input-field input, .input-field select {
-      padding: 10px;
-      border: 1px solid #d1d5db;
-      border-radius: 4px;
-      font-size: 0.95rem;
-    }
+    .checkbox-group p { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; color: #374151; }
+    .checkbox-options { display: flex; flex-wrap: wrap; gap: 15px; }
+    .checkbox-item { display: flex; align-items: center; gap: 6px; font-size: 0.9rem; }
 
     button {
       grid-column: 1 / -1;
@@ -73,183 +46,167 @@
       border-radius: 4px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 1rem;
       transition: background-color 0.2s;
     }
+    button:hover { background-color: #1d4ed8; }
+    button:disabled { background-color: #9ca3af; cursor: not-allowed; }
 
-    button:hover {
-      background-color: #1d4ed8;
-    }
-
-    .table-container {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    th, td {
-      text-align: left;
-      padding: 12px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    th {
-      background-color: #f3f4f6;
-      color: #374151;
-      font-weight: 600;
-    }
-
-    tr:hover {
-      background-color: #f9fafb;
-    }
-
-    .status {
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.8rem;
-      font-weight: bold;
-      display: inline-block;
-    }
-
-    .status-agendado { background-color: #dbeafe; color: #1e40af; }
-    .status-concluido { background-color: #dcfce7; color: #166534; }
-    .status-cancelado { background-color: #fee2e2; color: #991b1b; }
-
-    .btn-delete {
-      background-color: transparent;
-      color: #ef4444;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .btn-delete:hover {
-      color: #b91c1c;
-      background-color: transparent;
-    }
+    .table-container { overflow-x: auto; margin-top: 15px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #e5e7eb; white-space: nowrap; }
+    th { background-color: #f3f4f6; color: #374151; font-weight: 600; }
+    tr:hover { background-color: #f9fafb; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h1>Agenda de Treinamentos</h1>
+    <h1>Cadastro de Treinamentos</h1>
 
-    <form id="formTreinamento" class="form-group">
+    <form id="formTreinamento" class="form-grid">
       <div class="input-field">
-        <label for="curso">Treinamento / Curso</label>
-        <input type="text" id="curso" placeholder="Ex: Treinamento de Segurança" required>
+        <label for="empresa">Empresa</label>
+        <input type="text" id="empresa" required placeholder="Nome da empresa">
       </div>
 
       <div class="input-field">
-        <label for="instrutor">Instrutor / Fábrica</label>
-        <input type="text" id="instrutor" placeholder="Ex: João Silva" required>
+        <label for="cidade">Cidade</label>
+        <input type="text" id="cidade" required placeholder="Ex: Alegrete">
       </div>
 
       <div class="input-field">
-        <label for="data">Data</label>
-        <input type="date" id="data" required>
+        <label for="uf">UF</label>
+        <input type="text" id="uf" maxlength="2" required placeholder="Ex: RS" style="text-transform: uppercase;">
+      </div>
+
+      <div class="input-field">
+        <label for="estagiario">Estagiário / Participante</label>
+        <input type="text" id="estagiario" required placeholder="Nome completo">
+      </div>
+
+      <div class="input-field">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" required placeholder="email@exemplo.com">
+      </div>
+
+      <div class="input-field">
+        <label for="periodoTreinamento">Período de Treinamento</label>
+        <input type="text" id="periodoTreinamento" placeholder="Ex: Mês/Ano ou Datas">
       </div>
 
       <div class="input-field">
         <label for="status">Status</label>
         <select id="status">
+          <option value="Pendente">Pendente</option>
           <option value="Agendado">Agendado</option>
           <option value="Concluído">Concluído</option>
           <option value="Cancelado">Cancelado</option>
         </select>
       </div>
 
-      <button type="submit">Cadastrar Treinamento</button>
+      <div class="checkbox-group">
+        <p>Áreas de Interesse:</p>
+        <div class="checkbox-options">
+          <label class="checkbox-item"><input type="checkbox" id="quadroComando"> Quadro de Comando</label>
+          <label class="checkbox-item"><input type="checkbox" id="manutencaoBombas"> Manutenção de Bombas</label>
+          <label class="checkbox-item"><input type="checkbox" id="bobinagem"> Bobinagem</label>
+          <label class="checkbox-item"><input type="checkbox" id="dimensionamentos"> Dimensionamentos</label>
+          <label class="checkbox-item"><input type="checkbox" id="comercial"> Comercial</label>
+        </div>
+      </div>
+
+      <button type="submit" id="btnSalvar">Cadastrar na Planilha</button>
     </form>
 
     <div class="table-container">
       <table>
         <thead>
           <tr>
-            <th>Treinamento</th>
-            <th>Instrutor</th>
-            <th>Data</th>
+            <th>Empresa</th>
+            <th>Cidade/UF</th>
+            <th>Estagiário</th>
+            <th>E-mail</th>
+            <th>Interesses</th>
+            <th>Período</th>
             <th>Status</th>
-            <th>Ações</th>
           </tr>
         </thead>
-        <tbody id="tabelaCorpo">
-          <!-- Os registros inseridos aparecerão aqui -->
-        </tbody>
+        <tbody id="tabelaCorpo"></tbody>
       </table>
     </div>
   </div>
 
   <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMpWtqWITH0WbzqIJfkqFspLtaY1JPF1_c_de-6cBB1XTGtgtodwDNsEZNvQRjgdBD/exec";
+
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
-
-    // Carregar dados salvos no navegador ao abrir a página
-    document.addEventListener('DOMContentLoaded', carregarTreinamentos);
+    const btnSalvar = document.getElementById('btnSalvar');
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const treinamento = {
-        id: Date.now(),
-        curso: document.getElementById('curso').value,
-        instrutor: document.getElementById('instrutor').value,
-        data: document.getElementById('data').value,
-        status: document.getElementById('status').value
+      btnSalvar.disabled = true;
+      btnSalvar.textContent = "Enviando dados para a planilha...";
+
+      const dados = {
+        empresa: document.getElementById('empresa').value,
+        cidade: document.getElementById('cidade').value,
+        uf: document.getElementById('uf').value.toUpperCase(),
+        estagiario: document.getElementById('estagiario').value,
+        email: document.getElementById('email').value,
+        periodoTreinamento: document.getElementById('periodoTreinamento').value,
+        status: document.getElementById('status').value,
+        quadroComando: document.getElementById('quadroComando').checked,
+        manutencaoBombas: document.getElementById('manutencaoBombas').checked,
+        bobinagem: document.getElementById('bobinagem').checked,
+        dimensionamentos: document.getElementById('dimensionamentos').checked,
+        comercial: document.getElementById('comercial').checked
       };
 
-      salvarTreinamento(treinamento);
-      adicionarLinhaTabela(treinamento);
-      form.reset();
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dados)
+      })
+      .then(() => {
+        adicionarLinhaTabela(dados);
+        form.reset();
+        alert("Registro adicionado com sucesso à planilha!");
+      })
+      .catch(error => {
+        console.error('Erro:', error);
+        alert("Ocorreu um erro ao enviar os dados.");
+      })
+      .finally(() => {
+        btnSalvar.disabled = false;
+        btnSalvar.textContent = "Cadastrar na Planilha";
+      });
     });
 
     function adicionarLinhaTabela(item) {
       const tr = document.createElement('tr');
-      tr.setAttribute('data-id', item.id);
-
-      const statusClass = item.status === 'Agendado' ? 'status-agendado' :
-                          item.status === 'Concluído' ? 'status-concluido' : 'status-cancelado';
-
-      // Formatando data para DD/MM/AAAA
-      const dataFormatada = item.data.split('-').reverse().join('/');
+      
+      const interesses = [];
+      if (item.quadroComando) interesses.push("Quadro de Comando");
+      if (item.manutencaoBombas) interesses.push("Manutenção");
+      if (item.bobinagem) interesses.push("Bobinagem");
+      if (item.dimensionamentos) interesses.push("Dimensionamentos");
+      if (item.comercial) interesses.push("Comercial");
 
       tr.innerHTML = `
-        <td>${item.curso}</td>
-        <td>${item.instrutor}</td>
-        <td>${dataFormatada}</td>
-        <td><span class="status ${statusClass}">${item.status}</span></td>
-        <td><button class="btn-delete" onclick="removerTreinamento(${item.id})">Excluir</button></td>
+        <td>${item.empresa}</td>
+        <td>${item.cidade}/${item.uf}</td>
+        <td>${item.estagiario}</td>
+        <td>${item.email}</td>
+        <td>${interesses.join(', ') || '-'}</td>
+        <td>${item.periodoTreinamento || '-'}</td>
+        <td>${item.status}</td>
       `;
 
       tabelaCorpo.appendChild(tr);
-    }
-
-    function salvarTreinamento(item) {
-      const treinamentos = obterTreinamentosSalvos();
-      treinamentos.push(item);
-      localStorage.setItem('treinamentos', JSON.stringify(treinamentos));
-    }
-
-    function obterTreinamentosSalvos() {
-      const dados = localStorage.getItem('treinamentos');
-      return dados ? JSON.parse(dados) : [];
-    }
-
-    function carregarTreinamentos() {
-      const treinamentos = obterTreinamentosSalvos();
-      treinamentos.forEach(adicionarLinhaTabela);
-    }
-
-    function removerTreinamento(id) {
-      let treinamentos = obterTreinamentosSalvos();
-      treinamentos = treinamentos.filter(item => item.id !== id);
-      localStorage.setItem('treinamentos', JSON.stringify(treinamentos));
-
-      const linha = document.querySelector(`tr[data-id="${id}"]`);
-      if (linha) linha.remove();
     }
   </script>
 </body>
