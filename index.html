@@ -49,6 +49,18 @@
       padding-bottom: 10px;
     }
 
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .header-logo {
+      height: 40px;
+      width: auto;
+      object-fit: contain;
+    }
+
     h1 { color: var(--text-main); font-size: 1.5rem; }
 
     .theme-toggle-btn {
@@ -274,7 +286,10 @@
   <div class="container">
     
     <div class="header-bar">
-      <h1>Cadastro de Treinamentos</h1>
+      <div class="header-title">
+        <img src="Logo.png" alt="Logo" class="header-logo">
+        <h1>Cadastro de Treinamentos</h1>
+      </div>
       <button class="theme-toggle-btn" id="btnToggleTheme">
         <span id="themeIcon">☀️</span> <span id="themeText">Modo Claro</span>
       </button>
