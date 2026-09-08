@@ -362,7 +362,7 @@
 
   <script>
     // URL de Implantação Atualizada
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwAe2D-USzKcSp_KChTycFV-RYJRXQT8FKRvJnW2MLgdU_6Tykc_uyGPzSK5HaKTAId/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz9BMbTNLU622efzOy8e9GAsWycPHrcK99D9wSBjLzke2j39SCs4HnhlMkWl0Urft4q/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -481,10 +481,11 @@
           adicionarLinhaTabela(dados, true);
 
           if (dataFormatada) {
-            const listaDatas = dataFormatada.split(', ');
+            const listaDatas = dataFormatada.split(',');
             listaDatas.forEach(dStr => {
-              if (dStr.includes('/')) {
-                const p = dStr.split('/');
+              const dLimpa = dStr.trim();
+              if (dLimpa.includes('/')) {
+                const p = dLimpa.split('/');
                 const dataIso = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
                 if (datasOcupadas[dataIso]) {
                   datasOcupadas[dataIso] += " / " + empresaNome;
