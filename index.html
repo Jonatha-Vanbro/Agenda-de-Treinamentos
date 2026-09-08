@@ -387,7 +387,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyYzFgUlIRSz6rR960X9FY4PhLXjctx1-kJNkfHpQV_BUgDP_ivRPZ2lnSOmVqbwSay/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwoVkXUbXb78-buXg0d7jy-Ktk8RAXYgHkETiinwkC8z9AXAan6WUrnMEc7UqZEd7bv/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -446,20 +446,37 @@
       });
     }
 
+    function renderizarDados(data) {
+      if (data.datasOcupadas) {
+        datasOcupadas = data.datasOcupadas;
+        if (calendarPicker) calendarPicker.destroy();
+        inicializarCalendario();
+      }
+
+      if (data.historico && data.historico.length > 0) {
+        tabelaCorpo.innerHTML = "";
+        data.historico.slice().reverse().forEach(item => adicionarLinhaTabela(item));
+      }
+    }
+
     function carregarDadosPlanilha() {
+      // 1. Carrega do Cache para abertura instantânea
+      const cachedData = localStorage.getItem('treinamentos_cache');
+      if (cachedData) {
+        try {
+          const parsed = JSON.parse(cachedData);
+          renderizarDados(parsed);
+        } catch (e) {
+          console.error("Erro ao ler cache:", e);
+        }
+      }
+
+      // 2. Busca dados novos em segundo plano
       fetch(GOOGLE_SCRIPT_URL)
         .then(res => res.json())
         .then(data => {
-          if (data.datasOcupadas) {
-            datasOcupadas = data.datasOcupadas;
-            if (calendarPicker) calendarPicker.destroy();
-            inicializarCalendario();
-          }
-
-          if (data.historico && data.historico.length > 0) {
-            tabelaCorpo.innerHTML = "";
-            data.historico.slice().reverse().forEach(item => adicionarLinhaTabela(item));
-          }
+          localStorage.setItem('treinamentos_cache', JSON.stringify(data));
+          renderizarDados(data);
         })
         .catch(err => console.error("Erro ao carregar dados:", err));
     }
@@ -522,6 +539,7 @@
         form.reset();
         if (calendarPicker) calendarPicker.clear();
         alert("Registro adicionado com sucesso!");
+        carregarDadosPlanilha();
       })
       .catch(error => {
         console.error('Erro:', error);
