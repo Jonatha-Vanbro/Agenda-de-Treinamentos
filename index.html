@@ -213,6 +213,7 @@
       box-shadow: 0 2px 8px rgba(16, 185, 129, 0.4);
     }
 
+    /* Dias Agendados / Pendentes */
     .flatpickr-day.dia-ocupado {
       background: linear-gradient(135deg, #ef4444, #dc2626) !important;
       color: #ffffff !important;
@@ -223,6 +224,20 @@
     }
     .flatpickr-day.dia-ocupado:hover {
       background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+    }
+
+    /* Dias Concluídos (Esmaecidos) */
+    .flatpickr-day.dia-concluido {
+      background: rgba(100, 116, 139, 0.35) !important;
+      color: #94a3b8 !important;
+      border: 1px dashed #64748b !important;
+      opacity: 0.65;
+      box-shadow: none !important;
+    }
+    .flatpickr-day.dia-concluido:hover {
+      background: rgba(100, 116, 139, 0.7) !important;
+      color: #ffffff !important;
+      opacity: 1;
     }
 
     .table-container { 
@@ -387,7 +402,8 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPpNPptnVD7CW-Ay5Jol-8IXIrXzTJGiW70DAOoXyTQKjLBZPnTsIE4KdAD9jwKQLc/exec";
+    // Link atualizado da implantação do Apps Script
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxRAKILdYzxi3uWRL0bKXVeCaHDSPv7kKS_uLcXDO1TlX8otUgxDOHfY5Et9D_LR9ES/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -438,9 +454,26 @@
           const dataIso = `${ano}-${mes}-${dia}`;
 
           if (datasOcupadas[dataIso]) {
-            const nomeEmpresa = datasOcupadas[dataIso];
-            dayElem.classList.add("dia-ocupado");
-            dayElem.title = `Agendado: ${nomeEmpresa}`;
+            const registros = datasOcupadas[dataIso];
+            
+            // Verifica se todos os registros do dia estão concluídos
+            const todosConcluidos = Array.isArray(registros) && registros.every(r => {
+              const statusStr = typeof r === 'object' ? (r.status || '') : '';
+              const st = statusStr.toString().trim().toLowerCase();
+              return st === 'concluído' || st === 'concluido';
+            });
+
+            const detalhesTool = Array.isArray(registros) 
+              ? registros.map(r => typeof r === 'object' ? `${r.empresa} (${r.status})` : r).join(' / ')
+              : registros;
+
+            if (todosConcluidos) {
+              dayElem.classList.add("dia-concluido");
+              dayElem.title = `Concluído: ${detalhesTool}`;
+            } else {
+              dayElem.classList.add("dia-ocupado");
+              dayElem.title = `Agendado: ${detalhesTool}`;
+            }
           }
         }
       });
