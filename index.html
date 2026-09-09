@@ -387,7 +387,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyhl9a-Osil99JyoFYCCqBHXOhASl2tLWgwKVKfvZuM5NA3seuIsyAMCXZ1AwxFpZco/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCATI7S_8TxWombgRVjwUmUmZbGDOOPlj8nzVI6LPpy0gWue4xeWaVrCxQECKRicg/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -460,7 +460,7 @@
     }
 
     function carregarDadosPlanilha() {
-      // 1. Carrega do Cache para abertura instantânea
+      // 1. Carrega do Cache para abertura rápida
       const cachedData = localStorage.getItem('treinamentos_cache');
       if (cachedData) {
         try {
@@ -471,8 +471,8 @@
         }
       }
 
-      // 2. Busca dados novos em segundo plano
-      fetch(GOOGLE_SCRIPT_URL)
+      // 2. Busca dados atualizados diretamente da API ignorando cache do navegador
+      fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime())
         .then(res => res.json())
         .then(data => {
           localStorage.setItem('treinamentos_cache', JSON.stringify(data));
@@ -517,29 +517,12 @@
         body: JSON.stringify(dados)
       })
       .then(() => {
-        adicionarLinhaTabela(dados, true);
-
-        if (dataFormatada) {
-          const listaDatas = dataFormatada.split(',');
-          listaDatas.forEach(dStr => {
-            const dLimpa = dStr.trim();
-            if (dLimpa.includes('/')) {
-              const p = dLimpa.split('/');
-              const dataIso = `${p[2]}-${p[1].padStart(2, '0')}-${p[0].padStart(2, '0')}`;
-              if (datasOcupadas[dataIso]) {
-                datasOcupadas[dataIso] += " / " + empresaNome;
-              } else {
-                datasOcupadas[dataIso] = empresaNome;
-              }
-            }
-          });
-          if (calendarPicker) calendarPicker.redraw();
-        }
-
         form.reset();
         if (calendarPicker) calendarPicker.clear();
         alert("Registro adicionado com sucesso!");
-        carregarDadosPlanilha();
+        
+        // Recarrega os dados do servidor após 1 segundo
+        setTimeout(carregarDadosPlanilha, 1000);
       })
       .catch(error => {
         console.error('Erro:', error);
@@ -570,7 +553,7 @@
         body: JSON.stringify(payload)
       })
       .then(() => {
-        carregarDadosPlanilha();
+        setTimeout(carregarDadosPlanilha, 1000);
       })
       .catch(err => console.error("Erro ao alterar status:", err));
     }
@@ -586,12 +569,13 @@
       if (item.comercial) interesses.push("Comercial");
 
       const currentStatus = item.status || "Pendente";
+      const cidadeUf = (item.cidade || '') + (item.uf ? ' / ' + item.uf : '');
 
       tr.innerHTML = `
-        <td>${item.empresa}</td>
-        <td>${item.cidade}/${item.uf}</td>
-        <td>${item.estagiario}</td>
-        <td>${item.email}</td>
+        <td>${item.empresa || '-'}</td>
+        <td>${cidadeUf || '-'}</td>
+        <td>${item.estagiario || '-'}</td>
+        <td>${item.email || '-'}</td>
         <td>${interesses.join(', ') || '-'}</td>
         <td>${item.periodoTreinamento || '-'}</td>
         <td>
