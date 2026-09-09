@@ -387,7 +387,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxLVeprzYunpkVc58iHglx9mZ4abxePc46HCzVxdW_pYXaAloMn7k0KPRU0OMn1WEZY/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzPpNPptnVD7CW-Ay5Jol-8IXIrXzTJGiW70DAOoXyTQKjLBZPnTsIE4KdAD9jwKQLc/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -460,10 +460,8 @@
     }
 
     function carregarDadosPlanilha() {
-      // Limpa cache antigo para forçar atualização
       localStorage.removeItem('treinamentos_cache');
 
-      // Busca dados diretamente com um parâmetro para evitar cache HTTP
       fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime())
         .then(res => res.json())
         .then(data => {
@@ -551,12 +549,21 @@
     function adicionarLinhaTabela(item, noTopo = false) {
       const tr = document.createElement('tr');
       
+      function isMarcado(valor) {
+        if (valor === true) return true;
+        if (typeof valor === 'string') {
+          const v = valor.trim().toUpperCase();
+          return v === "X" || v === "TRUE";
+        }
+        return false;
+      }
+
       const interesses = [];
-      if (item.quadroComando === true || item.quadroComando === "TRUE") interesses.push("Quadro de Comando");
-      if (item.manutencaoBombas === true || item.manutencaoBombas === "TRUE") interesses.push("Manutenção");
-      if (item.bobinagem === true || item.bobinagem === "TRUE") interesses.push("Bobinagem");
-      if (item.dimensionamentos === true || item.dimensionamentos === "TRUE") interesses.push("Dimensionamentos");
-      if (item.comercial === true || item.comercial === "TRUE") interesses.push("Comercial");
+      if (isMarcado(item.quadroComando)) interesses.push("Quadro de Comando");
+      if (isMarcado(item.manutencaoBombas)) interesses.push("Manutenção");
+      if (isMarcado(item.bobinagem)) interesses.push("Bobinagem");
+      if (isMarcado(item.dimensionamentos)) interesses.push("Dimensionamentos");
+      if (isMarcado(item.comercial)) interesses.push("Comercial");
 
       const currentStatus = item.status || "Pendente";
       const cidadeUf = (item.cidade || '') + (item.uf ? ' / ' + item.uf : '');
