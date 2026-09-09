@@ -387,7 +387,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcCATI7S_8TxWombgRVjwUmUmZbGDOOPlj8nzVI6LPpy0gWue4xeWaVrCxQECKRicg/exec";
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz98VEqXNhwI9ffNfUIt8DiSuU4p8Wl1GhHn2S3OflwuCCzNYvLxsU0984k_Z-2tXcs/exec";
 
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
@@ -460,18 +460,10 @@
     }
 
     function carregarDadosPlanilha() {
-      // 1. Carrega do Cache para abertura rápida
-      const cachedData = localStorage.getItem('treinamentos_cache');
-      if (cachedData) {
-        try {
-          const parsed = JSON.parse(cachedData);
-          renderizarDados(parsed);
-        } catch (e) {
-          console.error("Erro ao ler cache:", e);
-        }
-      }
+      // Limpa cache antigo para forçar atualização
+      localStorage.removeItem('treinamentos_cache');
 
-      // 2. Busca dados atualizados diretamente da API ignorando cache do navegador
+      // Busca dados diretamente com um parâmetro para evitar cache HTTP
       fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime())
         .then(res => res.json())
         .then(data => {
@@ -520,9 +512,7 @@
         form.reset();
         if (calendarPicker) calendarPicker.clear();
         alert("Registro adicionado com sucesso!");
-        
-        // Recarrega os dados do servidor após 1 segundo
-        setTimeout(carregarDadosPlanilha, 1000);
+        setTimeout(carregarDadosPlanilha, 1200);
       })
       .catch(error => {
         console.error('Erro:', error);
@@ -562,11 +552,11 @@
       const tr = document.createElement('tr');
       
       const interesses = [];
-      if (item.quadroComando) interesses.push("Quadro de Comando");
-      if (item.manutencaoBombas) interesses.push("Manutenção");
-      if (item.bobinagem) interesses.push("Bobinagem");
-      if (item.dimensionamentos) interesses.push("Dimensionamentos");
-      if (item.comercial) interesses.push("Comercial");
+      if (item.quadroComando === true || item.quadroComando === "TRUE") interesses.push("Quadro de Comando");
+      if (item.manutencaoBombas === true || item.manutencaoBombas === "TRUE") interesses.push("Manutenção");
+      if (item.bobinagem === true || item.bobinagem === "TRUE") interesses.push("Bobinagem");
+      if (item.dimensionamentos === true || item.dimensionamentos === "TRUE") interesses.push("Dimensionamentos");
+      if (item.comercial === true || item.comercial === "TRUE") interesses.push("Comercial");
 
       const currentStatus = item.status || "Pendente";
       const cidadeUf = (item.cidade || '') + (item.uf ? ' / ' + item.uf : '');
