@@ -14,34 +14,38 @@
   
   <style>
     :root {
-      --bg-body: #0f172a;
-      --bg-card: #1e293b;
-      --bg-input: #0f172a;
-      --border-color: #334155;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --table-header: #1e293b;
-      --table-hover: #334155;
+      --bg-body: #0a0e1a;
+      --bg-card: #171f38;
+      --bg-input: #0a0e1a;
+      --border-color: #2b3552;
+      --text-main: #eef1f7;
+      --text-muted: #8992a8;
+      --primary-color: #0891b2;
+      --primary-hover: #0e7490;
+      --table-header: #171f38;
+      --table-hover: #232c4a;
+      --logo-plate: #ffffff;
+      --logo-plate-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
     }
 
     body.light-theme {
-      --bg-body: #f4f7f6;
+      --bg-body: #f5f7f9;
       --bg-card: #ffffff;
       --bg-input: #ffffff;
-      --border-color: #e5e7eb;
-      --text-main: #1f2937;
-      --text-muted: #4b5563;
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --table-header: #f3f4f6;
-      --table-hover: #f9fafb;
+      --border-color: #dde1e8;
+      --text-main: #1a2233;
+      --text-muted: #5b6478;
+      --primary-color: #0891b2;
+      --primary-hover: #0e7490;
+      --table-header: #eef0f4;
+      --table-hover: #f4f6f9;
+      --logo-plate: transparent;
+      --logo-plate-shadow: none;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
     body { background-color: var(--bg-body); color: var(--text-main); padding: 20px; }
-    .container { max-width: 1400px; margin: 0 auto; background: var(--bg-card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); }
+    .container { max-width: 1800px; width: 95%; margin: 0 auto; background: var(--bg-card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); }
     
     .header-bar {
       display: flex;
@@ -58,10 +62,20 @@
       gap: 16px;
     }
 
+    .header-logo-wrap {
+      background: var(--logo-plate, transparent);
+      padding: 6px 12px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: var(--logo-plate-shadow, none);
+    }
+
     .header-logo {
       height: 60px;
       width: auto;
       object-fit: contain;
+      display: block;
     }
 
     h1 { color: var(--text-main); font-size: 1.5rem; }
@@ -83,10 +97,10 @@
 
     .top-layout {
       display: grid;
-      grid-template-columns: 1fr 320px;
+      grid-template-columns: 7fr 3fr;
       gap: 25px;
       margin-bottom: 25px;
-      align-items: start;
+      align-items: stretch;
     }
 
     @media (max-width: 900px) {
@@ -95,7 +109,7 @@
 
     .form-container {
       background: var(--bg-card);
-      padding: 20px;
+      padding: 16px 20px;
       border: 1px solid var(--border-color);
       border-radius: 8px;
     }
@@ -103,12 +117,13 @@
     .form-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
+      gap: 12px;
     }
 
     .input-field { display: flex; flex-direction: column; }
+    .input-field.full-width { grid-column: 1 / -1; }
     .input-field label { font-size: 0.85rem; font-weight: 600; margin-bottom: 5px; color: var(--text-muted); }
-    .input-field input, .input-field select { 
+    .input-field input, .input-field select, .input-field textarea { 
       padding: 10px; 
       border: 1px solid var(--border-color); 
       border-radius: 4px; 
@@ -116,14 +131,19 @@
       background: var(--bg-input); 
       color: var(--text-main);
     }
+    .input-field textarea {
+      resize: vertical;
+      min-height: 46px;
+      font-family: inherit;
+    }
 
     .checkbox-group {
       grid-column: 1 / -1;
       background: var(--bg-input);
-      padding: 15px;
+      padding: 12px;
       border: 1px solid var(--border-color);
       border-radius: 6px;
-      margin-top: 10px;
+      margin-top: 6px;
     }
 
     .checkbox-group p { font-weight: 600; font-size: 0.9rem; margin-bottom: 10px; color: var(--text-main); }
@@ -149,21 +169,38 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      height: 100%;
+    }
+
+    .obs-input[readonly] {
+      cursor: pointer;
+    }
+
+    .flatpickr-calendar {
+      background: var(--bg-card) !important;
+      border: 1px solid var(--border-color) !important;
+      border-radius: 12px !important;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
     }
 
     .flatpickr-calendar.inline {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.35);
-      border: 1px solid var(--border-color) !important;
-      border-radius: 12px !important;
       width: 100% !important;
-      max-width: 320px;
-      background: var(--bg-card) !important;
+      max-width: none;
       padding: 10px;
-      overflow: hidden;
+    }
+
+    /* Torna a grade de dias fluida, acompanhando a largura do calendário */
+    .flatpickr-innerContainer,
+    .flatpickr-rContainer,
+    .flatpickr-days,
+    .dayContainer {
+      width: 100% !important;
+      max-width: none !important;
+      min-width: 0 !important;
     }
 
     .flatpickr-months {
-      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      background: linear-gradient(135deg, #0c2a33, #0891b2);
       border-radius: 8px 8px 0 0;
       padding: 6px 0;
       margin: -10px -10px 10px -10px;
@@ -172,6 +209,7 @@
     .flatpickr-current-month input.cur-year {
       font-weight: bold !important;
       color: #ffffff !important;
+      font-size: 1.15rem !important;
     }
     .flatpickr-months .flatpickr-prev-month, 
     .flatpickr-months .flatpickr-next-month {
@@ -179,20 +217,34 @@
       fill: #ffffff !important;
     }
 
+    .flatpickr-weekdays,
+    .flatpickr-weekdaycontainer {
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
     span.flatpickr-weekday {
-      color: #38bdf8 !important;
+      background: transparent !important;
+      color: var(--primary-color) !important;
       font-weight: 700 !important;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
     }
 
     .flatpickr-day {
+      max-width: none !important;
+      height: 42px !important;
+      line-height: 42px !important;
+      display: flex !important;
+      align-items: center;
+      justify-content: center;
       border-radius: 8px !important;
       color: var(--text-main);
       font-weight: 500;
-      margin: 2px 0;
+      font-size: 1rem;
+      margin: 1px 0;
     }
     .flatpickr-day:hover {
-      background-color: #3b82f6 !important;
+      background-color: #0891b2 !important;
       color: #ffffff !important;
       transform: scale(1.08);
       transition: all 0.15s ease-in-out;
@@ -215,15 +267,27 @@
 
     /* Dias Agendados / Pendentes */
     .flatpickr-day.dia-ocupado {
-      background: linear-gradient(135deg, #ef4444, #dc2626) !important;
-      color: #ffffff !important;
-      font-weight: bold !important;
+      background: rgba(239, 68, 68, 0.14) !important;
+      color: var(--text-main) !important;
+      font-weight: 600 !important;
       border: none !important;
       border-radius: 8px !important;
-      box-shadow: 0 2px 6px rgba(239, 68, 68, 0.4);
+      box-shadow: none !important;
+      position: relative;
+    }
+    .flatpickr-day.dia-ocupado::after {
+      content: "";
+      position: absolute;
+      bottom: 12%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #ef4444;
     }
     .flatpickr-day.dia-ocupado:hover {
-      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+      background: rgba(239, 68, 68, 0.28) !important;
     }
 
     /* Dias Concluídos (Esmaecidos) */
@@ -247,6 +311,27 @@
       border: 1px solid var(--border-color);
       border-radius: 6px;
       width: 100%;
+    }
+
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .table-toolbar label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .table-toolbar select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg-input);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      cursor: pointer;
     }
     
     table { 
@@ -273,13 +358,39 @@
       color: var(--text-main);
     }
 
-    th:nth-child(1), td:nth-child(1) { min-width: 180px; }
-    th:nth-child(2), td:nth-child(2) { min-width: 130px; }
-    th:nth-child(3), td:nth-child(3) { min-width: 160px; }
-    th:nth-child(4), td:nth-child(4) { min-width: 200px; }
-    th:nth-child(5), td:nth-child(5) { min-width: 220px; }
-    th:nth-child(6), td:nth-child(6) { min-width: 150px; }
-    th:nth-child(7), td:nth-child(7) { min-width: 130px; }
+    th:nth-child(1), td:nth-child(1) { min-width: 160px; }
+    th:nth-child(2), td:nth-child(2) { min-width: 110px; }
+    th:nth-child(3), td:nth-child(3) { min-width: 150px; }
+    th:nth-child(4), td:nth-child(4) { min-width: 180px; }
+    th:nth-child(5), td:nth-child(5) { min-width: 190px; }
+    th:nth-child(6), td:nth-child(6) { min-width: 140px; }
+    th:nth-child(7), td:nth-child(7) { min-width: 110px; }
+    th:nth-child(8), td:nth-child(8) { min-width: 190px; }
+    th:nth-child(9), td:nth-child(9) { min-width: 120px; }
+
+    .obs-input {
+      width: 100%;
+      min-width: 200px;
+      background: transparent;
+      color: var(--text-main);
+      border: 1px solid transparent;
+      padding: 6px 8px;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .obs-input:hover {
+      border-color: var(--border-color);
+    }
+    .obs-input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: var(--bg-input);
+    }
+    .obs-input.salvo {
+      border-color: #10b981;
+    }
 
     .status-select {
       background: var(--bg-input);
@@ -305,7 +416,9 @@
     
     <div class="header-bar">
       <div class="header-title">
-        <img src="Logo.png" alt="Logo" class="header-logo">
+        <div class="header-logo-wrap">
+          <img src="Logo.png" alt="Logo" class="header-logo">
+        </div>
         <h1>Cadastro de Treinamentos</h1>
       </div>
       <button class="theme-toggle-btn" id="btnToggleTheme">
@@ -368,6 +481,11 @@
             </div>
           </div>
 
+          <div class="input-field full-width">
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes" placeholder="Informações adicionais (opcional)"></textarea>
+          </div>
+
           <button type="submit" id="btnSalvar">Cadastrar na Planilha</button>
         </form>
       </div>
@@ -376,6 +494,18 @@
       <div class="calendar-container">
         <div id="inlineCalendar"></div>
       </div>
+    </div>
+
+    <!-- Filtro -->
+    <div class="table-toolbar">
+      <label for="filtroStatus">Filtrar por status:</label>
+      <select id="filtroStatus" onchange="aplicarFiltroStatus()">
+        <option value="todos">Todos</option>
+        <option value="Pendente">Pendente</option>
+        <option value="Agendado">Agendado</option>
+        <option value="Concluído">Concluído</option>
+        <option value="Cancelado">Cancelado</option>
+      </select>
     </div>
 
     <!-- Tabela -->
@@ -389,6 +519,8 @@
             <th>E-mail</th>
             <th>Interesses</th>
             <th>Período</th>
+            <th>Incluído em</th>
+            <th>Observações</th>
             <th>Status</th>
           </tr>
         </thead>
@@ -518,6 +650,10 @@
       const empresaNome = document.getElementById('empresa').value;
       const dataFormatada = document.getElementById('periodoTreinamento').value;
 
+      // Data/hora em que o registro está sendo incluído (não é o período do treinamento)
+      const agora = new Date();
+      const dataInclusaoFormatada = agora.toLocaleDateString('pt-BR');
+
       const dados = {
         empresa: empresaNome,
         cidade: document.getElementById('cidade').value,
@@ -530,7 +666,9 @@
         manutencaoBombas: document.getElementById('manutencaoBombas').checked,
         bobinagem: document.getElementById('bobinagem').checked,
         dimensionamentos: document.getElementById('dimensionamentos').checked,
-        comercial: document.getElementById('comercial').checked
+        comercial: document.getElementById('comercial').checked,
+        observacoes: document.getElementById('observacoes').value,
+        dataInclusao: dataInclusaoFormatada
       };
 
       fetch(GOOGLE_SCRIPT_URL, {
@@ -558,6 +696,8 @@
     function alterarStatus(selectElem, item) {
       const novoStatus = selectElem.value;
       selectElem.className = `status-select ${novoStatus}`;
+      selectElem.closest('tr').dataset.status = novoStatus;
+      aplicarFiltroStatus();
 
       const payload = {
         action: "updateStatus",
@@ -577,6 +717,93 @@
         setTimeout(carregarDadosPlanilha, 1000);
       })
       .catch(err => console.error("Erro ao alterar status:", err));
+    }
+
+    function salvarObservacao(textareaElem, item) {
+      const novaObservacao = textareaElem.value;
+
+      // Evita chamada ao servidor se nada mudou
+      if (novaObservacao === (item.observacoes || '')) return;
+
+      const payload = {
+        action: "updateObservacoes",
+        linha: item.linha || null,
+        empresa: item.empresa,
+        estagiario: item.estagiario,
+        novaObservacao: novaObservacao
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        item.observacoes = novaObservacao;
+        textareaElem.classList.add('salvo');
+      })
+      .catch(err => console.error("Erro ao salvar observação:", err));
+    }
+
+    function abrirEditorPeriodo(inputElem, item) {
+      inputElem.classList.remove('salvo');
+
+      // Se já existe uma instância de calendário para este campo, apenas reabre
+      if (inputElem._flatpickrPeriodo) {
+        inputElem._flatpickrPeriodo.open();
+        return;
+      }
+
+      const datasIniciais = (item.periodoTreinamento || '')
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const fp = flatpickr(inputElem, {
+        mode: "multiple",
+        conjunction: ", ",
+        locale: "pt",
+        dateFormat: "d/m/Y",
+        allowInput: false,
+        defaultDate: datasIniciais,
+        appendTo: document.body, // evita que o calendário seja cortado pela rolagem da tabela
+        onClose: function() {
+          salvarPeriodo(inputElem, item);
+        }
+      });
+
+      inputElem._flatpickrPeriodo = fp;
+      fp.open();
+    }
+
+    function salvarPeriodo(inputElem, item) {
+      const novoPeriodo = inputElem.value;
+
+      // Evita chamada ao servidor se nada mudou
+      if (novoPeriodo === (item.periodoTreinamento || '')) return;
+
+      const payload = {
+        action: "updatePeriodo",
+        linha: item.linha || null,
+        empresa: item.empresa,
+        estagiario: item.estagiario,
+        novoPeriodo: novoPeriodo
+      };
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        item.periodoTreinamento = novoPeriodo;
+        inputElem.classList.add('salvo');
+        // Recarrega para atualizar os destaques do calendário com a nova data
+        setTimeout(carregarDadosPlanilha, 1000);
+      })
+      .catch(err => console.error("Erro ao salvar período:", err));
     }
 
     function adicionarLinhaTabela(item, noTopo = false) {
@@ -599,7 +826,9 @@
       if (isMarcado(item.comercial)) interesses.push("Comercial");
 
       const currentStatus = item.status || "Pendente";
+      tr.dataset.status = currentStatus;
       const cidadeUf = (item.cidade || '') + (item.uf ? ' / ' + item.uf : '');
+      const observacaoTexto = item.observacoes || '';
 
       tr.innerHTML = `
         <td>${item.empresa || '-'}</td>
@@ -607,7 +836,16 @@
         <td>${item.estagiario || '-'}</td>
         <td>${item.email || '-'}</td>
         <td>${interesses.join(', ') || '-'}</td>
-        <td>${item.periodoTreinamento || '-'}</td>
+        <td>
+          <input type="text" class="obs-input" readonly value="${(item.periodoTreinamento || '').replace(/"/g, '&quot;')}"
+            onclick="abrirEditorPeriodo(this, ${JSON.stringify(item).replace(/"/g, '&quot;')})">
+        </td>
+        <td>${item.dataInclusao || '-'}</td>
+        <td>
+          <textarea class="obs-input" rows="1"
+            onfocus="this.classList.remove('salvo')"
+            onblur="salvarObservacao(this, ${JSON.stringify(item).replace(/"/g, '&quot;')})">${observacaoTexto}</textarea>
+        </td>
         <td>
           <select class="status-select ${currentStatus}" onchange="alterarStatus(this, ${JSON.stringify(item).replace(/"/g, '&quot;')})">
             <option value="Pendente" ${currentStatus === "Pendente" ? "selected" : ""}>Pendente</option>
@@ -623,6 +861,15 @@
       } else {
         tabelaCorpo.appendChild(tr);
       }
+      aplicarFiltroStatus();
+    }
+
+    function aplicarFiltroStatus() {
+      const filtro = document.getElementById('filtroStatus').value;
+      Array.from(tabelaCorpo.children).forEach(tr => {
+        const mostrar = (filtro === 'todos') || (tr.dataset.status === filtro);
+        tr.style.display = mostrar ? '' : 'none';
+      });
     }
   </script>
 </body>
