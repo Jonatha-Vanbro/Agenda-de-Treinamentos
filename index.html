@@ -167,9 +167,21 @@
 
     .calendar-container {
       display: flex;
-      justify-content: center;
-      align-items: center;
+      flex-direction: column;
       height: 100%;
+      gap: 10px;
+    }
+
+    .calendar-top-bar {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .calendar-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .obs-input[readonly] {
@@ -316,6 +328,8 @@
     .table-toolbar {
       display: flex;
       align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
       gap: 10px;
       margin-bottom: 12px;
     }
@@ -333,6 +347,46 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
+
+    .toolbar-filtro {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sync-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 24px;
+      padding: 8px 8px 8px 16px;
+    }
+    .sync-info {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .sync-btn {
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .sync-btn:hover { background: var(--primary-hover); }
+    .sync-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     
     table { 
       width: 100%; 
@@ -493,20 +547,30 @@
 
       <!-- Calendário -->
       <div class="calendar-container">
-        <div id="inlineCalendar"></div>
+        <div class="calendar-top-bar">
+          <div class="sync-bar">
+            <span class="sync-info">📅 <span id="ultimaAtualizacao">Ainda não sincronizado</span></span>
+            <button type="button" class="sync-btn" id="btnSincronizar" onclick="sincronizarAgora()">🔄 Sincronizar</button>
+          </div>
+        </div>
+        <div class="calendar-body">
+          <div id="inlineCalendar"></div>
+        </div>
       </div>
     </div>
 
     <!-- Filtro -->
     <div class="table-toolbar">
-      <label for="filtroStatus">Filtrar por status:</label>
-      <select id="filtroStatus" onchange="aplicarFiltroStatus()">
-        <option value="todos">Todos</option>
-        <option value="Pendente">Pendente</option>
-        <option value="Agendado">Agendado</option>
-        <option value="Concluído">Concluído</option>
-        <option value="Cancelado">Cancelado</option>
-      </select>
+      <div class="toolbar-filtro">
+        <label for="filtroStatus">Filtrar por status:</label>
+        <select id="filtroStatus" onchange="aplicarFiltroStatus()">
+          <option value="todos">Todos</option>
+          <option value="Pendente">Pendente</option>
+          <option value="Agendado">Agendado</option>
+          <option value="Concluído">Concluído</option>
+          <option value="Cancelado">Cancelado</option>
+        </select>
+      </div>
     </div>
 
     <!-- Tabela -->
@@ -628,13 +692,32 @@
     function carregarDadosPlanilha() {
       localStorage.removeItem('treinamentos_cache');
 
-      fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime())
+      return fetch(GOOGLE_SCRIPT_URL + "?t=" + new Date().getTime())
         .then(res => res.json())
         .then(data => {
           localStorage.setItem('treinamentos_cache', JSON.stringify(data));
           renderizarDados(data);
+          atualizarHorarioSincronizacao();
         })
         .catch(err => console.error("Erro ao carregar dados:", err));
+    }
+
+    function atualizarHorarioSincronizacao() {
+      const agora = new Date();
+      const hora = agora.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      document.getElementById('ultimaAtualizacao').textContent = `Atualizado às ${hora}`;
+    }
+
+    function sincronizarAgora() {
+      const btn = document.getElementById('btnSincronizar');
+      const textoOriginal = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '🔄 Sincronizando...';
+
+      carregarDadosPlanilha().finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = textoOriginal;
+      });
     }
 
     document.addEventListener("DOMContentLoaded", () => {
