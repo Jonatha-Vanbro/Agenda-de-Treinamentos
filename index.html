@@ -378,7 +378,8 @@
       border-radius: 4px;
       font-size: 0.85rem;
       font-family: inherit;
-      resize: vertical;
+      resize: none;
+      overflow: hidden;
     }
     .obs-input:hover {
       border-color: var(--border-color);
@@ -719,6 +720,11 @@
       .catch(err => console.error("Erro ao alterar status:", err));
     }
 
+    function ajustarAlturaTextarea(el) {
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+
     function salvarObservacao(textareaElem, item) {
       const novaObservacao = textareaElem.value;
 
@@ -843,6 +849,7 @@
         <td>${item.dataInclusao || '-'}</td>
         <td>
           <textarea class="obs-input" rows="1"
+            oninput="ajustarAlturaTextarea(this)"
             onfocus="this.classList.remove('salvo')"
             onblur="salvarObservacao(this, ${JSON.stringify(item).replace(/"/g, '&quot;')})">${observacaoTexto}</textarea>
         </td>
@@ -861,6 +868,10 @@
       } else {
         tabelaCorpo.appendChild(tr);
       }
+
+      const textareaObs = tr.querySelector('textarea.obs-input');
+      if (textareaObs) ajustarAlturaTextarea(textareaObs);
+
       aplicarFiltroStatus();
     }
 
