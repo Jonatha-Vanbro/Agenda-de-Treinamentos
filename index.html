@@ -10,50 +10,37 @@
 
   <!-- CSS do Flatpickr -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css" id="flatpickr-theme">
   
   <style>
     :root {
-      --bg-body: #0f172a;
-      --bg-card: #1e293b;
-      --bg-input: #0f172a;
-      --border-color: #262e45;
-      --text-main: #eef1f7;
-      --text-muted: #8992a8;
-      --primary-color: #0891b2;
-      --primary-hover: #0e7490;
-      --table-header: #1e293b;
-      --table-hover: #1e2540;
-      --logo-plate: #ffffff;
-      --logo-plate-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-    }
-
-    body.light-theme {
-      --bg-body: #f5f7f9;
+      --bg-body: #eef2f7;
       --bg-card: #ffffff;
       --bg-input: #ffffff;
-      --border-color: #dde1e8;
-      --text-main: #1a2233;
-      --text-muted: #5b6478;
-      --primary-color: #0891b2;
-      --primary-hover: #0e7490;
-      --table-header: #eef0f4;
-      --table-hover: #f4f6f9;
-      --logo-plate: transparent;
-      --logo-plate-shadow: none;
+      --border-color: #e2e8f0;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --primary-color: #1b3b63;
+      --primary-hover: #142c4d;
+      --table-header: #1b3b63;
+      --table-hover: #f1f5f9;
+      --logo-plate: #ffffff;
+      --logo-plate-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
     body { background-color: var(--bg-body); color: var(--text-main); padding: 20px; }
-    .container { max-width: 1800px; width: 95%; margin: 0 auto; background: var(--bg-card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); }
+    .page-wrap { max-width: 1800px; width: 95%; margin: 0 auto; }
+    .container { background: var(--bg-card); padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); border: 1px solid var(--border-color); }
     
     .header-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      background: var(--primary-color);
+      padding: 18px 25px;
+      border-radius: 8px;
       margin-bottom: 20px;
-      border-bottom: 2px solid var(--border-color);
-      padding-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     .header-title {
@@ -78,22 +65,7 @@
       display: block;
     }
 
-    h1 { color: var(--text-main); font-size: 1.5rem; }
-
-    .theme-toggle-btn {
-      background: var(--bg-input);
-      color: var(--text-main);
-      border: 1px solid var(--border-color);
-      padding: 8px 16px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.85rem;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .theme-toggle-btn:hover { background: var(--border-color); }
+    .header-bar h1 { color: #ffffff; font-size: 1.5rem; }
 
     .top-layout {
       display: grid;
@@ -153,9 +125,8 @@
     button[type="submit"] {
       grid-column: 1 / -1;
       padding: 12px;
-      background: linear-gradient(90deg, #0c2a33 0%, #0891b2 50%, #0c2a33 100%);
+      background-color: var(--primary-color);
       border: none;
-      border-bottom: 3px solid #22d3ee;
       color: white;
       border-radius: 4px;
       font-weight: bold;
@@ -163,8 +134,8 @@
       font-size: 1rem;
       margin-top: 10px;
     }
-    button[type="submit"]:hover { filter: brightness(1.15); }
-    button[type="submit"]:disabled { background: #64748b; border-bottom-color: #64748b; filter: none; cursor: not-allowed; }
+    button[type="submit"]:hover { background-color: var(--primary-hover); }
+    button[type="submit"]:disabled { background-color: #64748b; cursor: not-allowed; }
 
     .calendar-container {
       display: flex;
@@ -175,8 +146,23 @@
 
     .calendar-top-bar {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
     }
+
+    .today-btn {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .today-btn:hover { background: var(--table-hover); }
 
     .calendar-body {
       flex: 1;
@@ -213,7 +199,7 @@
     }
 
     .flatpickr-months {
-      background: linear-gradient(90deg, #0c2a33 0%, #0891b2 50%, #0c2a33 100%);
+      background: var(--primary-color);
       border-radius: 8px 8px 0 0;
       padding: 6px 0;
       margin: -10px -10px 10px -10px;
@@ -257,7 +243,7 @@
       margin: 1px 0;
     }
     .flatpickr-day:hover {
-      background-color: #0891b2 !important;
+      background-color: var(--primary-color) !important;
       color: #ffffff !important;
       transform: scale(1.08);
       transition: all 0.15s ease-in-out;
@@ -400,8 +386,7 @@
       position: sticky;
       top: 0;
       z-index: 1;
-      background: linear-gradient(90deg, #0c2a33 0%, #0891b2 50%, #0c2a33 100%);
-      border-bottom: 3px solid #22d3ee;
+      background: var(--primary-color);
     }
 
     th { 
@@ -455,37 +440,35 @@
     .status-select {
       background: var(--bg-input);
       color: var(--text-main);
-      border: 1px solid var(--border-color);
-      padding: 4px 8px;
-      border-radius: 4px;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 20px;
       font-size: 0.82rem;
       cursor: pointer;
-      font-weight: 600;
+      font-weight: 700;
     }
-    .status-select.Pendente { color: #f59e0b; border-color: #f59e0b; }
-    .status-select.Agendado { color: #3b82f6; border-color: #3b82f6; }
-    .status-select.Concluído { color: #10b981; border-color: #10b981; }
-    .status-select.Cancelado { color: #ef4444; border-color: #ef4444; }
+    .status-select.Pendente { background: #f59e0b; color: #ffffff; }
+    .status-select.Agendado { background: #3b82f6; color: #ffffff; }
+    .status-select.Concluído { background: #10b981; color: #ffffff; }
+    .status-select.Cancelado { background: #ef4444; color: #ffffff; }
 
     tr:hover { background-color: var(--table-hover); }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    
-    <div class="header-bar">
+  <div class="page-wrap">
+
+  <div class="header-bar">
       <div class="header-title">
         <div class="header-logo-wrap">
           <img src="Logo.png" alt="Logo" class="header-logo">
         </div>
         <h1>Cadastro de Treinamentos</h1>
       </div>
-      <button class="theme-toggle-btn" id="btnToggleTheme">
-        <span id="themeIcon">☀️</span> <span id="themeText">Modo Claro</span>
-      </button>
     </div>
 
+    <div class="container">
     <div class="top-layout">
       <!-- Formulário -->
       <div class="form-container">
@@ -553,6 +536,7 @@
       <!-- Calendário -->
       <div class="calendar-container">
         <div class="calendar-top-bar">
+          <button type="button" class="today-btn" onclick="irParaHoje()">📅 Hoje</button>
           <div class="sync-bar">
             <span class="sync-info">📅 <span id="ultimaAtualizacao">Ainda não sincronizado</span></span>
             <button type="button" class="sync-btn" id="btnSincronizar" onclick="sincronizarAgora()">🔄 Sincronizar</button>
@@ -599,6 +583,7 @@
     </div>
 
   </div>
+  </div>
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/pt.js"></script>
@@ -610,34 +595,13 @@
     const form = document.getElementById('formTreinamento');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
     const btnSalvar = document.getElementById('btnSalvar');
-    const btnToggleTheme = document.getElementById('btnToggleTheme');
-    const themeIcon = document.getElementById('themeIcon');
-    const themeText = document.getElementById('themeText');
 
     let datasOcupadas = {};
     let calendarPicker = null;
 
-    function aplicarTema(tema) {
-      if (tema === 'light') {
-        document.body.classList.add('light-theme');
-        themeIcon.textContent = '🌙';
-        themeText.textContent = 'Modo Escuro';
-      } else {
-        document.body.classList.remove('light-theme');
-        themeIcon.textContent = '☀️';
-        themeText.textContent = 'Modo Claro';
-      }
+    function irParaHoje() {
+      if (calendarPicker) calendarPicker.jumpToDate(new Date());
     }
-
-    btnToggleTheme.addEventListener('click', () => {
-      const isLight = document.body.classList.contains('light-theme');
-      const novoTema = isLight ? 'dark' : 'light';
-      localStorage.setItem('temaPref', novoTema);
-      aplicarTema(novoTema);
-    });
-
-    const temaSalvo = localStorage.getItem('temaPref') || 'dark';
-    aplicarTema(temaSalvo);
 
     function inicializarCalendario() {
       calendarPicker = flatpickr("#inlineCalendar", {
